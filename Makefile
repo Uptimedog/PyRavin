@@ -1,4 +1,4 @@
-PYTHON ?= python3
+PYTHON ?= python
 PIP ?= $(PYTHON) -m pip
 
 
@@ -6,6 +6,7 @@ config:
 	$(PIP) install pycodestyle
 	$(PIP) install flake8
 	$(PIP) install twine
+	$(PIP) install wheel
 
 
 lint-pycodestyle:

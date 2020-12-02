@@ -13,5 +13,5 @@
 # limitations under the License.
 
 
-class Auth():
+class OAuth():
     pass

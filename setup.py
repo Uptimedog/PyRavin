@@ -13,7 +13,14 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/clivern/pyravin",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
-    install_requires=["requests", "pytz"],
+    install_requires=[
+        "requests",
+        "pytz",
+        "google-api-python-client",
+        "google-auth",
+        "google-auth-oauthlib",
+        "google-auth-httplib2"
+    ],
     license="MIT",
     platforms=['any'],
     classifiers=[

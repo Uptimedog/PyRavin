@@ -22,6 +22,7 @@ from .constant import OAUTH_REVOKE_API
 
 
 class OAuth():
+    """OAuth Class"""
 
     def __init__(self, client_configs, redirect_uri, scopes=[]):
         self.client_configs = client_configs
@@ -29,6 +30,12 @@ class OAuth():
         self.scopes = scopes
 
     def get_authorization_url(self):
+        """
+        Get Authorization URL
+
+        Returns:
+            Authorization URL and state value
+        """
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
             self.client_configs,
             scopes=self.scopes
@@ -51,6 +58,15 @@ class OAuth():
         return authorization_url, state
 
     def get_credentials(self, state, request_url):
+        """
+        Get Credentials from request URL
+
+        Args:
+            request_url: Current request URL
+
+        Returns:
+            a dict of credentials
+        """
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
             self.client_configs,
             scopes=self.scopes,
@@ -85,8 +101,7 @@ class OAuth():
         Args:
             credentials: a dict of credentials
 
-        Returns
-
+        Returns:
             New credentials and user info for example
             {
                 "email": "test@clivern.com",
@@ -116,6 +131,15 @@ class OAuth():
         return new_credentials, userinfo
 
     def revoke_credentials(self, credentials):
+        """
+        Revoke Credentials
+
+        Args:
+            credentials: a dict of credentials
+
+        Returns:
+            True on success and False on failure
+        """
         credentials = google.oauth2.credentials.Credentials(**credentials)
 
         revoke = requests.post(

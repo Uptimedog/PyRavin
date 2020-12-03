@@ -1,12 +1,13 @@
 PYTHON ?= python
 PIP ?= $(PYTHON) -m pip
-
+TOX ?= tox
 
 config:
 	$(PIP) install pycodestyle
 	$(PIP) install flake8
 	$(PIP) install twine
 	$(PIP) install wheel
+	$(PIP) install tox
 
 
 lint-pycodestyle:
@@ -25,7 +26,7 @@ lint: lint-pycodestyle lint-flake8
 
 test:
 	@echo "\n==> Run Test Cases:"
-	$(PYTHON) setup.py test
+	$(TOX)
 
 
 ci: test lint

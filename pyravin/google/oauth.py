@@ -69,7 +69,7 @@ class OAuth():
 
         return authorization_url, state
 
-    def get_credentials(self, state, redirect_uri, request_url):
+    def fetch_credentials(self, state, redirect_uri, request_url):
         """
         Get Credentials from request URL
 
@@ -101,17 +101,16 @@ class OAuth():
         # Store credentials in the session or database
         credentials = flow.credentials
 
-        return credentials_to_dict(credentials)
+        self.credentials = credentials_to_dict(credentials)
 
-    def get_user_info(self, credentials):
+        return self.credentials
+
+    def get_user_info(self):
         """
         Get user info
 
-        Args:
-            credentials: a dict of credentials
-
         Returns:
-            New credentials and user info for example
+            The user info. something like
             {
                 "email": "test@clivern.com",
                 "given_name": "Clivern",
@@ -126,7 +125,7 @@ class OAuth():
         Raises:
             APICallError: If API call failed
         """
-        credentials = google.oauth2.credentials.Credentials(**credentials)
+        credentials = google.oauth2.credentials.Credentials(**self.credentials)
 
         try:
             service = googleapiclient.discovery.build(
@@ -138,14 +137,13 @@ class OAuth():
         except Exception as e:
             raise APICallError("API error while fetching userinfo: {}".format(str(e)))
 
-        return credentials_to_dict(credentials), userinfo
+        self.credentials = credentials_to_dict(credentials)
 
-    def revoke_credentials(self, credentials):
+        return userinfo
+
+    def revoke_credentials(self):
         """
         Revoke Credentials
-
-        Args:
-            credentials: a dict of credentials
 
         Returns:
             True on success and False on failure
@@ -153,7 +151,7 @@ class OAuth():
         Raises:
             APICallError: If API call failed
         """
-        credentials = google.oauth2.credentials.Credentials(**credentials)
+        credentials = google.oauth2.credentials.Credentials(**self.credentials)
 
         try:
             revoke = requests.post(
@@ -170,3 +168,16 @@ class OAuth():
             return True
         else:
             return False
+
+    def set_credentials(self, credentials):
+        """
+        Set Credentials
+
+        Args:
+            credentials: the oauth credentials
+        """
+        self.credentials = credentials
+
+    def get_credentials(self):
+        """Get Credentials"""
+        return self.credentials

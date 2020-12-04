@@ -23,6 +23,7 @@ class Scope():
     USERINFO_EMAIL = 'https://www.googleapis.com/auth/userinfo.email'
     USERINFO_PROFILE = 'https://www.googleapis.com/auth/userinfo.profile'
     CALENDAR_READ_OLNY = 'https://www.googleapis.com/auth/calendar.readonly'
+    CALENDAR = 'https://www.googleapis.com/auth/calendar'
 
 
 class Service():

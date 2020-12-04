@@ -16,22 +16,34 @@ import requests
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
-from .constant import API_VERSION
-from .constant import OAUTH_SERVICE_NAME
-from .constant import OAUTH_REVOKE_API
+
+from .constant import Service
+from .constant import Version
+from .constant import APIs
+from .exception import APICallError
+from .utils import credentials_to_dict
 
 
 class OAuth():
     """OAuth Class"""
 
-    def __init__(self, client_configs, redirect_uri, scopes=[]):
+    def __init__(self, client_configs, scopes=[]):
+        """Inits OAuth
+
+        Args:
+            client_configs: a dict of client configs
+
+            scopes: List of scopes required
+        """
         self.client_configs = client_configs
-        self.redirect_uri = redirect_uri
         self.scopes = scopes
 
-    def get_authorization_url(self):
+    def get_authorization_url(self, redirect_uri):
         """
         Get Authorization URL
+
+        Args:
+            redirect_uri: Web application redirect uri for oauth callback
 
         Returns:
             Authorization URL and state value
@@ -45,7 +57,7 @@ class OAuth():
         # for the OAuth 2.0 client, which you configured in the API Console. If this
         # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
         # error.
-        flow.redirect_uri = self.redirect_uri
+        flow.redirect_uri = redirect_uri
 
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
@@ -57,42 +69,39 @@ class OAuth():
 
         return authorization_url, state
 
-    def get_credentials(self, state, request_url):
+    def get_credentials(self, state, redirect_uri, request_url):
         """
         Get Credentials from request URL
 
         Args:
+            state: Authorization state value
+            redirect_uri: Web application redirect uri for oauth callback
             request_url: Current request URL
 
         Returns:
             a dict of credentials
+
+        Raises:
+            APICallError: If API call failed
         """
-        flow = google_auth_oauthlib.flow.Flow.from_client_config(
-            self.client_configs,
-            scopes=self.scopes,
-            state=state
-        )
+        try:
+            flow = google_auth_oauthlib.flow.Flow.from_client_config(
+                self.client_configs,
+                scopes=self.scopes,
+                state=state
+            )
 
-        flow.redirect_uri = self.redirect_uri
+            flow.redirect_uri = redirect_uri
 
-        # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-        authorization_response = request_url
+            # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+            flow.fetch_token(authorization_response=request_url)
+        except Exception as e:
+            raise APICallError("API error while fetching credentials: {}".format(str(e)))
 
-        flow.fetch_token(authorization_response=authorization_response)
-
-        # Store credentials in the session.
-        # ACTION ITEM: In a production app, you likely want to save these
-        #              credentials in a persistent database instead.
+        # Store credentials in the session or database
         credentials = flow.credentials
 
-        return {
-            'token': credentials.token,
-            'refresh_token': credentials.refresh_token,
-            'token_uri': credentials.token_uri,
-            'client_id': credentials.client_id,
-            'client_secret': credentials.client_secret,
-            'scopes': credentials.scopes
-        }
+        return credentials_to_dict(credentials)
 
     def get_user_info(self, credentials):
         """
@@ -113,22 +122,23 @@ class OAuth():
                 "picture": "https://lh3.googleusercontent.com/a-/AOh14Gh8rjdYiSrh",
                 "verified_email": true
             }
+
+        Raises:
+            APICallError: If API call failed
         """
         credentials = google.oauth2.credentials.Credentials(**credentials)
 
-        userinfo_service = googleapiclient.discovery.build(OAUTH_SERVICE_NAME, API_VERSION, credentials=credentials)
-        userinfo = userinfo_service.userinfo().get().execute()
+        try:
+            service = googleapiclient.discovery.build(
+                Service.OAuth,
+                Version.API_V2,
+                credentials=credentials
+            )
+            userinfo = service.userinfo().get().execute()
+        except Exception as e:
+            raise APICallError("API error while fetching userinfo: {}".format(str(e)))
 
-        new_credentials = {
-            'token': credentials.token,
-            'refresh_token': credentials.refresh_token,
-            'token_uri': credentials.token_uri,
-            'client_id': credentials.client_id,
-            'client_secret': credentials.client_secret,
-            'scopes': credentials.scopes
-        }
-
-        return new_credentials, userinfo
+        return credentials_to_dict(credentials), userinfo
 
     def revoke_credentials(self, credentials):
         """
@@ -139,14 +149,20 @@ class OAuth():
 
         Returns:
             True on success and False on failure
+
+        Raises:
+            APICallError: If API call failed
         """
         credentials = google.oauth2.credentials.Credentials(**credentials)
 
-        revoke = requests.post(
-            OAUTH_REVOKE_API,
-            params={'token': credentials.token},
-            headers={'content-type': 'application/x-www-form-urlencoded'}
-        )
+        try:
+            revoke = requests.post(
+                APIs.REVOKE_CREDENTIALS,
+                params={'token': credentials.token},
+                headers={'content-type': 'application/x-www-form-urlencoded'}
+            )
+        except Exception as e:
+            raise APICallError("API error while revoking credentials: {}".format(str(e)))
 
         status_code = getattr(revoke, 'status_code')
 

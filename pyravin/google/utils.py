@@ -13,22 +13,20 @@
 # limitations under the License.
 
 
-class Version():
-    API_V2 = 'v2'
-    API_V3 = 'v3'
+def credentials_to_dict(credentials):
+    """A dict of Credentials
 
+    Args:
+        Google API credentials response
 
-class Scope():
-    OPENID = 'openid'
-    USERINFO_EMAIL = 'https://www.googleapis.com/auth/userinfo.email'
-    USERINFO_PROFILE = 'https://www.googleapis.com/auth/userinfo.profile'
-    CALENDAR_READ_OLNY = 'https://www.googleapis.com/auth/calendar.readonly'
-
-
-class Service():
-    OAuth = 'oauth2'
-    CALENDAR = 'calendar'
-
-
-class APIs():
-    REVOKE_CREDENTIALS = 'https://oauth2.googleapis.com/revoke'
+    Returns:
+        a dict of credentials
+    """
+    return {
+        'token': credentials.token,
+        'refresh_token': credentials.refresh_token,
+        'token_uri': credentials.token_uri,
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'scopes': credentials.scopes
+    }

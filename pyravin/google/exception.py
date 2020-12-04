@@ -13,23 +13,9 @@
 # limitations under the License.
 
 
-class Version():
-    API_V2 = 'v2'
-    API_V3 = 'v3'
+class APICallError(Exception):
+    """APICall Custom Exception"""
 
-
-class Scope():
-    OPENID = 'openid'
-    USERINFO_EMAIL = 'https://www.googleapis.com/auth/userinfo.email'
-    USERINFO_PROFILE = 'https://www.googleapis.com/auth/userinfo.profile'
-    CALENDAR_READ_OLNY = 'https://www.googleapis.com/auth/calendar.readonly'
-    CALENDAR = 'https://www.googleapis.com/auth/calendar'
-
-
-class Service():
-    OAuth = 'oauth2'
-    CALENDAR = 'calendar'
-
-
-class APIs():
-    REVOKE_CREDENTIALS = 'https://oauth2.googleapis.com/revoke'
+    def __init__(self, message):
+        """Inits APICallError"""
+        Exception.__init__(self, message)

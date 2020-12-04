@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyravin",
-    version="0.0.1",
+    version="0.0.2",
     author="clivern",
     author_email="hello@clivern.com",
     description="Apache License, Version 2.0",

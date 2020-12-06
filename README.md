@@ -1,6 +1,10 @@
 PyRavin
 =====
 
+Third Party Integrations!
+
+[![PyPI version](https://badge.fury.io/py/pyravin.svg)](https://badge.fury.io/py/pyravin)
+
 Installation
 ------------
 To install PyRavin run this command:

@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyravin",
-    version="0.0.3",
+    version="0.0.5",
     author="clivern",
     author_email="hello@clivern.com",
     description="Apache License, Version 2.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/clivern/pyravin",
+    url="https://github.com/GeometryIO/PyRavin",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     install_requires=[
         "requests>=2.25.0",

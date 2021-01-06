@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyravin",
-    version="0.0.5",
+    version="0.0.6",
     author="clivern",
     author_email="hello@clivern.com",
     description="Apache License, Version 2.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/GeometryIO/PyRavin",
+    url="https://github.com/FlabberIO/PyRavin",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     install_requires=[
         "requests>=2.25.0",
@@ -19,7 +19,8 @@ setuptools.setup(
         "google-api-python-client>=1.12.8",
         "google-auth>=1.23.0",
         "google-auth-oauthlib>=0.4.2",
-        "google-auth-httplib2>=0.0.4"
+        "google-auth-httplib2>=0.0.4",
+        "zoomus>=1.1.3"
     ],
     license="Apache License, Version 2.0",
     platforms=['any'],
